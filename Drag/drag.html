@@ -1,0 +1,152 @@
+<html>
+<head>
+   <title>拖拽功能</title>
+    <style type="text/css">
+        *{
+          padding:0;
+          margin:0;
+        }
+        #box1{
+            width: 100px;
+            height: 100px;
+            background: red;
+        }
+        #box2{
+            width: 100px;
+            height: 100px;
+            background: pink;
+            position: absolute;
+        }
+    </style>
+    <script type='text/javascript'>
+        window.onload=function () {
+            /*
+				 * 拖拽box1元素
+				 *  - 拖拽的流程
+				 * 		1.当鼠标在被拖拽元素上按下时，开始拖拽  onmousedown
+				 * 		2.当鼠标移动时被拖拽元素跟随鼠标移动 onmousemove
+				 * 		3.当鼠标松开时，被拖拽元素固定在当前位置	onmouseup
+				 */
+
+            //获取box1
+            var box1 = document.getElementById("box1");
+            var box2 = document.getElementById("box2");
+
+            //开启box1的拖拽
+            drag(box1);
+            //开启box2的
+            drag(box2);
+            /*
+			 * 提取一个专门用来设置拖拽的函数
+			 * 参数：开启拖拽的元素
+			 */
+            function drag(obj) {
+                //当鼠标在被拖拽元素上按下时，开始拖拽  onmousedown
+                obj.onmousedown = function (event) {
+                    //设置box1捕获所有鼠标按下的事件
+                    /*
+                     * setCapture()
+                     * 	- 只有IE支持，但是在火狐中调用时不会报错，
+                     * 		而如果使用chrome调用，会报错
+                     */
+                    /*if(box1.setCapture){
+                        box1.setCapture();
+                    }*/
+                    obj.setCapture && obj.setCapture();
+                    event = event || window.event;
+                    //div的偏移量 鼠标.clentX - 元素.offsetLeft
+                    //div的偏移量 鼠标.clentY - 元素.offsetTop
+                    var ol = event.clientX - obj.offsetLeft;
+                    var ot = event.clientY - obj.offsetTop;
+                    //为document绑定一个onmousemove事件
+                    document.onmousemove = function (event) {
+                        event = event || window.event;
+                        //当鼠标移动时被拖拽元素跟随鼠标移动 onmousemove
+                        //获取鼠标的坐标
+                        var left = event.clientX - ol;
+                        var top = event.clientY - ot;
+                        //修改box1的位置
+                        obj.style.left = left + "px";
+                        obj.style.top = top + "px";
+                    };
+                    //为document绑定一个鼠标松开事件
+                    document.onmouseup = function () {
+                        //当鼠标松开时，被拖拽元素固定在当前位置	onmouseup
+                        //取消document的onmousemove事件
+                        document.onmousemove = null;
+                        //取消document的onmouseup事件
+                        document.onmouseup = null;
+                        //当鼠标松开时，取消对事件的捕获
+                        obj.releaseCapture && obj.releaseCapture();
+                    };
+                    /*
+                     * 当我们拖拽一个网页中的内容时，浏览器会默认去搜索引擎中搜索内容，
+                     * 	此时会导致拖拽功能的异常，这个是浏览器提供的默认行为，
+                     * 	如果不希望发生这个行为，则可以通过return false来取消默认行为
+                     *
+                     * 但是这招对IE8不起作用
+                     */
+                    return false;
+
+                };
+            }
+            /*
+				 * 键盘事件：
+				 * 	onkeydown
+				 * 		- 按键被按下
+				 * 		- 对于onkeydown来说如果一直按着某个按键不松手，则事件会一直触发
+				 * 		- 当onkeydown连续触发时，第一次和第二次之间会间隔稍微长一点，其他的会非常的快
+				 * 			这种设计是为了防止误操作的发生。
+				 * 	onkeyup
+				 * 		- 按键被松开
+				 *
+				 *  键盘事件一般都会绑定给一些可以获取到焦点的对象或者是document
+				 */
+
+            document.onkeydown = function(event){
+                event = event || window.event;
+                /*
+                 * 可以通过keyCode来获取按键的编码
+                 * 	通过它可以判断哪个按键被按下
+                 * 除了keyCode，事件对象中还提供了几个属性
+                 * 	altKey
+                 * 	ctrlKey
+                 * 	shiftKey
+                 * 		- 这个三个用来判断alt ctrl 和 shift是否被按下
+                 * 			如果按下则返回true，否则返回false
+                 */
+                //console.log(event.keyCode);
+                //判断一个y是否被按下
+                //判断y和ctrl是否同时被按下
+                if(event.keyCode === 89 && event.ctrlKey){
+                    console.log("ctrl和y都被按下了");
+                }
+            };
+            /*document.onkeyup = function(){
+                console.log("按键松开了");
+            };*/
+            //获取input
+            var input = document.getElementsByTagName("input")[0];
+            input.onkeydown = function(event){
+                event = event || window.event;
+                //console.log(event.keyCode);
+                //数字 48 - 57
+                //使文本框中不能输入数字
+                if(event.keyCode >= 48 && event.keyCode <= 57){
+                    //在文本框中输入内容，属于onkeydown的默认行为
+                    //如果在onkeydown中取消了默认行为，则输入的内容，不会出现在文本框中
+                    return false;
+                }
+            };
+        }
+    </script>
+</head>
+<body>
+    <div>
+        我是一段文字
+        <div id="box1"></div>
+        <div id="box2"></div>
+        <!--<img src="img/an.jpg" id="img1" style="position: absolute;"/>-->
+    </div>
+</body>
+</html>
