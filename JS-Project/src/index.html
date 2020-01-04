@@ -1,0 +1,127 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>轮播图片</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafafa">
+  <style type="text/css">
+      *{
+        padding:0;
+        margin:0;
+      }
+      .wrap{
+        width: 500px;
+        height: 332px;
+        margin: 50px auto;
+        background: yellowgreen;
+        padding: 10px;
+        position: relative;
+        overflow:hidden;
+      }
+      .content{
+        /*list-style: none;*/
+        width: 2600px;
+        position: absolute;
+        left: 0;
+      }
+      .content li{
+        /*display: inline-block;*/
+        list-style: none;
+        float: left;
+        margin: 0 10px;
+      }
+      .navDiv{
+        position: absolute;
+        width: 100px;
+        bottom:15px;
+        left: 205px;
+      }
+    .navDiv a{
+      text-decoration: none;
+      width: 10px;
+      height: 10px;
+      background: red;
+      display: inline-block;
+      opacity:0.5;
+      border-radius: 50px;
+    }
+    .navDiv a:hover{
+      background: yellowgreen;
+    }
+  </style>
+  <script type="text/javascript" src="js/drag.js"></script>
+  <script type="text/javascript">
+      window.onload=function(){
+          var wrap=document.querySelector(".wrap");
+          var content=document.querySelector(".content");
+          var liArr=document.querySelectorAll(".content li");
+          var aArr=document.querySelectorAll(".navDiv a");
+          var navDiv=document.querySelector(".navDiv");
+          content.style.width=liArr.length*520+"px";
+          navDiv.style.left=(wrap.offsetWidth-navDiv.offsetWidth)/2+"px";
+          var index=0;
+          aArr[index].style.backgroundColor="yellowgreen";
+          for (var i = 0; i < aArr.length; i++) {
+              aArr[i].num=i;
+              aArr[i].onclick=function () {
+                  clearInterval(timer);
+                index=this.num;
+                setPosition();
+                move(content,"left",index*-520,20,function () {
+                   autoChange();
+                })
+              };
+          }
+          setPosition();
+          function setPosition() {
+              if(index>=liArr.length-1){
+                  index=0;
+                  content.style.left=0;
+              }
+              for (var i = 0; i < aArr.length; i++) {
+              	  aArr[i].style.background="";
+              }
+              aArr[index].style.background="yellowgreen";
+          }
+          autoChange();
+          var timer;
+          function autoChange() {
+              timer=setInterval(function () {
+                  index++;
+//                  if(index>liArr.length){
+//                      index=0;
+//                  }
+                  index%=liArr.length;
+                  move(content,"left",-index*520,20,function () {
+                      setPosition();
+                  });
+              },3000)
+          }
+      }
+  </script>
+</head>
+
+<body>
+  <div class="wrap">
+      <ul class="content">
+        <li><img src="img/1.jpg" alt="轮播图片"></li>
+        <li><img src="img/2.jpg" alt="轮播图片"></li>
+        <li><img src="img/3.jpg" alt="轮播图片"></li>
+        <li><img src="img/4.jpg" alt="轮播图片"></li>
+        <li><img src="img/5.jpg" alt="轮播图片"></li>
+        <li><img src="img/1.jpg" alt="轮播图片"></li>
+      </ul>
+      <div class="navDiv">
+        <a href="javascript:;"></a>
+        <a href="javascript:;"></a>
+        <a href="javascript:;"></a>
+        <a href="javascript:;"></a>
+        <a href="javascript:;"></a>
+      </div>
+  </div>
+
+</body>
+</html>
